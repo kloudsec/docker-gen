@@ -1,4 +1,4 @@
-FROM debian:wheezy
+FROM ubuntu:14.04
 MAINTAINER Jason Wilder <jason@influxdb.com>
 
 ENV VERSION 0.4.3
