@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -241,10 +242,32 @@ func sendSignalToContainer(client *docker.Client, config Config) {
 		return
 	}
 
+	runningContainers, err := client.ListContainers(docker.ListContainersOptions{})
+	if err != nil {
+		log.Printf("Error retrieving all running containers: %s\n", err)
+		return
+	}
 	for container, signal := range config.NotifyContainers {
+		id := ""
+		containerReg := regexp.MustCompile(container)
+	findContainerLoop:
+		for _, runningContainer := range runningContainers {
+			for _, name := range runningContainer.Names {
+				log.Println("Checking against", runningContainer.ID, name)
+				if containerReg.MatchString(name) {
+					id = runningContainer.ID
+					break findContainerLoop
+				}
+			}
+		}
+		if id == "" {
+			log.Printf("Cannot find a container matching regexp '%s'\n", container)
+			continue
+		}
+
 		log.Printf("Sending container '%s' signal '%v'", container, signal)
 		killOpts := docker.KillContainerOptions{
-			ID:     container,
+			ID:     id,
 			Signal: signal,
 		}
 		if err := client.KillContainer(killOpts); err != nil {
