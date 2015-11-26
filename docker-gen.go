@@ -249,13 +249,14 @@ func sendSignalToContainer(client *docker.Client, config Config) {
 	}
 	for container, signal := range config.NotifyContainers {
 		id := ""
+		matchingName := ""
 		containerReg := regexp.MustCompile(container)
 	findContainerLoop:
 		for _, runningContainer := range runningContainers {
 			for _, name := range runningContainer.Names {
-				log.Println("Checking against", runningContainer.ID, name)
 				if containerReg.MatchString(name) {
 					id = runningContainer.ID
+					matchingName = name
 					break findContainerLoop
 				}
 			}
@@ -265,7 +266,7 @@ func sendSignalToContainer(client *docker.Client, config Config) {
 			continue
 		}
 
-		log.Printf("Sending container '%s' signal '%v'", container, signal)
+		log.Printf("Sending container '%s' ('%s') signal '%v'", container, matchingName, signal)
 		killOpts := docker.KillContainerOptions{
 			ID:     id,
 			Signal: signal,

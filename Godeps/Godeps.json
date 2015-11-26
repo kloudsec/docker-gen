@@ -1,0 +1,15 @@
+{
+	"ImportPath": "github.com/kloudsec/docker-gen",
+	"GoVersion": "go1.5.1",
+	"Deps": [
+		{
+			"ImportPath": "github.com/BurntSushi/toml",
+			"Comment": "v0.1.0-21-g056c9bc",
+			"Rev": "056c9bc7be7190eaa7715723883caffa5f8fa3e4"
+		},
+		{
+			"ImportPath": "github.com/fsouza/go-dockerclient",
+			"Rev": "0f5764b4d2f5b8928a05db1226a508817a9a01dd"
+		}
+	]
+}
